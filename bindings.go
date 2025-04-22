@@ -1,8 +1,6 @@
-package main
+package gospacetime
 
-import (
-	"unsafe"
-)
+import "unsafe"
 
 type LogLevel uint32
 
@@ -20,15 +18,15 @@ func console_log(
 	level LogLevel,
 
 	targetPtr *byte,
-	targetLen uintptr,
+	targetLen uint32,
 
 	filenamePtr *byte,
-	filenameLen uintptr,
+	filenameLen uint32,
 
 	lineNumber uint32,
 
 	messagePtr *byte,
-	messageLen uintptr,
+	messageLen uint32,
 )
 
 //go:wasmimport spacetime_10.0 BytesSource
@@ -43,10 +41,10 @@ func __describe_module__(description BytesSink) {
 
 	console_log(
 		LOG_LEVEL_INFO,
-		unsafe.StringData(t), unsafe.Sizeof(t),
-		unsafe.StringData(f), unsafe.Sizeof(f),
+		unsafe.StringData(t), uint32(len(t)),
+		unsafe.StringData(f), uint32(len(f)),
 		123,
-		unsafe.StringData(m), unsafe.Sizeof(m),
+		unsafe.StringData(m), uint32(len(m)),
 	)
 }
 
