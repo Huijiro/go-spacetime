@@ -1,4 +1,4 @@
-package gospacetime
+package main
 
 import (
 	"bytes"
@@ -42,7 +42,9 @@ func BSATN(algebraic AlgebraicValue) []byte {
 	var buffer bytes.Buffer
 
 	switch v := algebraic.(type) {
-	case uint8, uint16, uint32, uint64, int8, int16, int32, int64:
+	case uint8:
+		buffer.WriteByte(v)
+	case uint16, uint32, uint64, int8, int16, int32, int64:
 		binary.Write(&buffer, binary.LittleEndian, v)
 	case float32, float64:
 		switch v := v.(type) {
@@ -62,6 +64,12 @@ func BSATN(algebraic AlgebraicValue) []byte {
 	case string:
 		value := append(BSATN(uint32(len(v))), BSATN([]byte(v))...)
 		buffer.Write(value)
+	case ProductValue:
+		for _, element := range v.elements {
+			buffer.Write(BSATN(element.algebraic_type))
+		}
+	default:
+		panic("unsupported type")
 	}
 	return buffer.Bytes()
 }

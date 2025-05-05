@@ -1,6 +1,8 @@
-package gospacetime
+package main
 
-import "unsafe"
+import (
+	"unsafe"
+)
 
 type LogLevel uint32
 
@@ -33,6 +35,9 @@ func console_log(
 type BytesSource = uint32
 type BytesSink = uint32
 
+//go:wasmimport spacetime_10.0 bytes_sink_write
+func bytes_sink_write(sink BytesSink, ptr *byte, len uint32) uint32
+
 //export __describe_module__
 func __describe_module__(description BytesSink) {
 	t := "my_wasm_module"
@@ -46,6 +51,10 @@ func __describe_module__(description BytesSink) {
 		123,
 		unsafe.StringData(m), uint32(len(m)),
 	)
+
+	value := "Hello, World!"
+
+	bytes_sink_write(description, unsafe.StringData(value), uint32(len(value)))
 }
 
 //export __call_reducer__
